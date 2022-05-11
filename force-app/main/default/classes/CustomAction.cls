@@ -3,13 +3,14 @@ public with sharing class CustomAction {
   public static List <Results> execute (List<String> request) {
 
     //Consultar la Oportunidad
-
     List<Opportunity> op = [SELECT id, Porcentaje_Comision__c FROM 	Opportunity WHERE Id IN :request   WITH SECURITY_ENFORCED LIMIT 1];
 
     List<Poliza__c> polizas = [SELECT id, Oportunidad__c FROM 	Poliza__c WHERE Oportunidad__c IN :op WITH SECURITY_ENFORCED];
 
     List<Cobros__c> cobros =[SELECT id, Poliza__c FROM Cobros__c WHERE Poliza__c IN :polizas WITH SECURITY_ENFORCED];
+    
     List<Pago_Aplicado__c> pagosAplicados =[SELECT id, No_Cobro__c, Comision_Compania__c FROM Pago_Aplicado__c WHERE No_Cobro__c IN :cobros WITH SECURITY_ENFORCED];
+    
     for (Pago_Aplicado__c pagoA : pagosAplicados) {
         pagoA.Comision_Compania__c = op[0].Porcentaje_Comision__c;
     }
